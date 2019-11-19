@@ -62,7 +62,7 @@ do
     read -p "${normal}What ${red}environment${normal} do you want to work on (Production, Staging, Test...): ${bold}" vENVIRONMENT
     echo "${normal}"
     #Takes the VIP ip of the client   
-    vOPTIONS=($(cat $vFILENAME | grep --color=auto -i "$vCLIENTNAME" | grep --color=auto -i $vENVIRONMENT | awk 'BEGIN { FS = "," }; {print $13}'| grep --color=auto -iv "db0" | uniq | sed 's/"//g'))
+    vOPTIONS=($(cat $vFILENAME | grep --color=auto -i "$vCLIENTNAME" | grep --color=auto -i $vENVIRONMENT | awk 'BEGIN { FS = "," }; {print $13}'| grep --color=auto -iv "db0" | sed 's/"//g' | sort | uniq))
 
     if [ ${#vOPTIONS[@]} -eq 0 ]; 
     then
@@ -103,13 +103,13 @@ until ((0));
     done
 
 #Create a list of the app servers and IP.
-vAPPS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGVIP | awk 'BEGIN { FS=","}; {print $14}' | grep --color=auto -iv "db0" | sed 's/"//g'))
+vAPPS=($(grep --color=auto -i "$vCLIENTNAME" $vFILENAME | grep --color=auto -i $vENVIRONMENT | grep --color=auto -i $vWORKINGVIP | awk 'BEGIN { FS=","}; {print $14}' | grep --color=auto -iv "db0" | sed 's/"//g' | sort | uniq))
 
 #Create an array with the IPs of the app servers
 declare -a vAPPSIP=()
 for eachapp in "${vAPPS[@]}"; 
     do
-        tempip=$(grep --color=auto "$eachapp" clientenv_report.txt | awk 'BEGIN { FS=","}; {print $11}' | sed 's/"//g')
+        tempip=$(grep --color=auto "$eachapp" clientenv_report.txt | awk 'BEGIN { FS=","}; {print $11}' | sed 's/"//g' | sort | uniq)
         vAPPSIP+=($tempip)
     done
 
