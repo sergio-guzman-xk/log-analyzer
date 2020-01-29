@@ -6,14 +6,14 @@ This can be improved or more options added based on feedback. I took some other 
 Since both tier 1 and tier 2 teams are constantly doing researching on MH environments, an automatted tool was necesary to imrove the efficiency of this process. 
 This tool will automate the process of gathering logs by removing the need of loging into every single MH server to get the data. 
 
-### Installation
+## Installation
 The process is quite simple as you just need to download the folder into a linux machine. Since this is bash you will need aither a linux system or a mac. For windows users you can use the linux system that can be downloaded for windows systems. 
 Once you have the folder, make sure that you grant full privileges to the script and then run ./log_analyzer 
 
 ## Deliverables
 The folder has 2 subfolders called client-reports and script-logs. The result of the task you performed will be located at client-reports, while any error thrown by the search will be located at script-logs.
 
-### Example 
+## Example 
 
 $ ./log-analyzer.sh
 Please provide your AD username:*******
