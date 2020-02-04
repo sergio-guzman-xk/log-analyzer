@@ -13,7 +13,7 @@ normal=$(tput sgr0)
 red=$(tput setaf 1)
 green=$(tput setaf 2)
 
-#checks is it is being run from a writeable location
+#checks if it is being run from a writeable location
 cwd=`pwd`
 if [ ! -w "$cwd" ]; 
     then
@@ -29,7 +29,7 @@ read -p "Please provide your ${red}${bold}AD password:${normal}" vPASS
 vFILENAME='clientenv_report.txt'
 declare -a vDATERANGE=()
 echo
-echo "${green}${bold}We are downloading the client list to work on, please provide a second."
+echo "${green}${bold}We are downloading the client list to work on, please wait."
 
 #Once the user exists the application it will remove the cookie created and the file with the MH data
 function trap2exit (){
