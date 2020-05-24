@@ -1,4 +1,4 @@
-# log_analyzer script
+# log_analyzer script V 2.0
 the idea of this script is to have a tool capable of pulling logs from multiple app servers at once. Currently it can download all the bb-access logs, perform greps on the access logs and bb-services. 
 This can be improved or more options added based on feedback. I took some other scripts as a reference, since those scripts where outdated the creation of a new script was needed. Some features from those scripts were imported into this one.
 
@@ -12,6 +12,11 @@ Once you have the folder, make sure that you grant full privileges to the script
 
 ## Deliverables
 The folder has 2 subfolders called client-reports and script-logs. The result of the task you performed will be located at client-reports, while any error thrown by the search will be located at script-logs.
+
+## Fixes in version 2.0
+- Fixed an issue with mass downloads being overwriteen thus leaving only the last downloaded file.
+- Added a better folder structure in order to organize the results in a more efficient way.
+- Added a new option in which it is possible to download all bb-services-logs from all appservers.
 
 ## Example 
 
