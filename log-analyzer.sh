@@ -4,7 +4,8 @@
 #description    :This script will allow us to gather data from multiple appserver in MH environments. Was based on automator.sh
 #author         :Sergio Guzman @ sergio.guzman@blackboard.com
 #date           :2019-11-13
-#usage          :./log-analyzer.sh       
+#usage          :./log-analyzer.sh 
+#version        :2.0      
 #=================================================================================================
 
 #Font styles
@@ -13,7 +14,7 @@ normal=$(tput sgr0)
 red=$(tput setaf 1)
 green=$(tput setaf 2)
 
-#checks if it is being run from a writeable location
+#checks is it is being run from a writeable location
 cwd=`pwd`
 if [ ! -w "$cwd" ]; 
     then
@@ -29,7 +30,7 @@ read -p "Please provide your ${red}${bold}AD password:${normal}" vPASS
 vFILENAME='clientenv_report.txt'
 declare -a vDATERANGE=()
 echo
-echo "${green}${bold}We are downloading the client list to work on, please wait."
+echo "${green}${bold}We are downloading the client list to work on, please provide a second."
 
 #Once the user exists the application it will remove the cookie created and the file with the MH data
 function trap2exit (){
@@ -114,7 +115,7 @@ for eachapp in "${vAPPS[@]}";
     done
 
 # deleting the file so we are always up to date
-rm -rf $vFILENAME
+# rm -rf $vFILENAME
 
 echo "${normal}We found the following Apps to work based on your input: "
 vCOUNTER=1
@@ -200,12 +201,15 @@ until ((0));
 		#Print the list of possible tasks
 		echo "${bold}Possible tasks${bold}"
 		echo
-		echo -e "${bold}${red}1) ${bold}${normal}Download all the Access-logs \n${bold}${red}2) ${bold}${normal}Perform a search in the Access-logs \n${bold}${red}3) ${bold}${normal}Perform a search in all the bb-services-logs"
-		echo
+		echo -e "${bold}${red}1) ${bold}${normal}Download all the Access-logs"
+		echo -e "${bold}${red}2) ${bold}${normal}Perform a search in the Access-logs"
+        echo -e "${bold}${red}3) ${bold}${normal}Perform a search in all the bb-services-logs"
+        echo -e "${bold}${red}4) ${bold}${normal}Download all the bb-services-logs"
+        echo
 		read -p "${bold}Input the above ${red}id number from the task that you want to perform: ${bold}${normal} " vCHOICE
 		echo
 		#Checks for a valid answer
-		if [ "$vCHOICE" -eq 1 ] || [ "$vCHOICE" -eq 2 ] || [ "$vCHOICE" -eq 3 ];
+		if [ "$vCHOICE" -eq 1 ] || [ "$vCHOICE" -eq 2 ] || [ "$vCHOICE" -eq 3 ] || [ "$vCHOICE" -eq 4 ];
 		then
 			break
 		        else
@@ -217,6 +221,7 @@ until ((0));
 	done
 	
 currentDate=`date +%Y-%m-%d-%k_%M_%S`
+vFOLDERNAME=$(echo $vCLIENTNAME | tr -d ' ')
 
 if [ $vCHOICE -eq 1 ]
 then
@@ -233,14 +238,16 @@ then
     echo 
     # Connect to server
     echo
+    vPATH="./client-reports/$vFOLDERNAME/bb-access-logs/"
     vCOUNTER=0
     for ip in "${vAPPSIP[@]}"; 
         do
         echo "Connecting to ${vAPPS[$vCOUNTER]}"
         for day in "${datearrange[@]}"; 
             do
-              sshpass -p $vPASS scp -pqo StrictHostKeyChecking=no $vUSER@$ip:/usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt ./client-reports/ 2>>./script-logs/error-logs.txt
-              sshpass -p $vPASS scp -pqo StrictHostKeyChecking=no $vUSER@$ip:/usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz ./client-reports/ 2>>./script-logs/error-logs.txt
+                mkdir -p $vPATH"${vAPPS[$vCOUNTER]}"
+                sshpass -p $vPASS scp -pqo StrictHostKeyChecking=no $vUSER@$ip:/usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt $vPATH"${vAPPS[$vCOUNTER]}"/ 2>>./script-logs/error-logs.txt
+                sshpass -p $vPASS scp -pqo StrictHostKeyChecking=no $vUSER@$ip:/usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz $vPATH"${vAPPS[$vCOUNTER]}"/ 2>>./script-logs/error-logs.txt
             done
         echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
         echo ""
@@ -277,6 +284,8 @@ then
     echo >> ./client-reports/"$filename"
     # Connect to server
     echo
+    vPATH="./client-reports/$vFOLDERNAME/bb-access-logs/"
+    mkdir -p $vPATH
     vCOUNTER=0
     for ip in "${vAPPSIP[@]}"; 
         do
@@ -285,8 +294,8 @@ then
         echo >> ./client-reports/"$filename"
         for day in "${datearrange[@]}"; 
             do
-                sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip grep --color=auto -iH $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt >> ./client-reports/"$filename" 2>>./script-logs/error-logs.txt
-                sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz >> ./client-reports/"$filename" 2>>./script-logs/error-logs.txt
+                sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip grep --color=auto -iH $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt >> $vPATH"$filename" 2>>./script-logs/error-logs.txt
+                sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz >> $vPATH"$filename" 2>>./script-logs/error-logs.txt
             done
         echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
         echo >> ./client-reports/"$filename"
@@ -326,6 +335,8 @@ then
     echo >> ./client-reports/"$filename"
     # Connect to server
     echo
+    vPATH="./client-reports/$vFOLDERNAME/bb-services-logs/"
+    mkdir -p $vPATH
     vCOUNTER=0
     for ip in "${vAPPSIP[@]}"; 
         do
@@ -334,13 +345,42 @@ then
         echo >> ./client-reports/"$filename"
         for day in "${datearrange[@]}"; 
             do
-                sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip grep --color=auto -iA 1000 $vSTRINGSEARCH /usr/local/blackboard/logs/bb-services-log.$day.txt >> ./client-reports/"$filename" 2>>./script-logs/error-logs.txt
-                sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip grep --color=auto -iA 1000 $vSTRINGSEARCH /usr/local/blackboard/logs/bb-services-log.txt >> ./client-reports/"$filename" 2>>./script-logs/error-logs.txt
+                sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip grep --color=auto -iA 1000 $vSTRINGSEARCH /usr/local/blackboard/logs/bb-services-log.$day.txt >> $vPATH"$filename" 2>>./script-logs/error-logs.txt
+                sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip grep --color=auto -iA 1000 $vSTRINGSEARCH /usr/local/blackboard/logs/bb-services-log.txt >> $vPATH"$filename" 2>>./script-logs/error-logs.txt
             done
         echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
         echo >> ./client-reports/"$filename"
         echo "Disconnecting from ${vAPPS[$vCOUNTER]}" >> ./client-reports/"$filename"
         echo >> ./client-reports/"$filename"
+        echo ""
+        vCOUNTER=$[$vCOUNTER+1]
+        done
+elif [ $vCHOICE -eq 4 ]
+then
+    # Create a header for easy replication
+    echo "=============================================================================="
+    echo 
+    echo "User: $vUSER" 
+    echo "Client Name: $vCLIENTNAME" 
+    echo "Client Environment: $vENVIRONMENT" 
+    echo "Start Date: $vSTARTDATE" 
+    echo "End Date: $vENDDATE" 
+    echo 
+    echo "==============================================================================" 
+    echo 
+    # Connect to server
+    echo
+    vPATH="./client-reports/$vFOLDERNAME/bb-services-logs/"
+    vCOUNTER=0
+    for ip in "${vAPPSIP[@]}"; 
+        do
+        echo "Connecting to ${vAPPS[$vCOUNTER]}"
+        for day in "${datearrange[@]}"; 
+            do
+                mkdir -p $vPATH"${vAPPS[$vCOUNTER]}"
+                sshpass -p $vPASS scp -pqo StrictHostKeyChecking=no $vUSER@$ip:/usr/local/blackboard/logs/bb-services-log.$day.txt $vPATH"${vAPPS[$vCOUNTER]}"/ 2>>./script-logs/error-logs.txt
+            done
+        echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
         echo ""
         vCOUNTER=$[$vCOUNTER+1]
         done
