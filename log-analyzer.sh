@@ -115,7 +115,7 @@ for eachapp in "${vAPPS[@]}";
     done
 
 # deleting the file so we are always up to date
-rm -rf $vFILENAME
+# rm -rf $vFILENAME
 
 echo "${normal}We found the following Apps to work based on your input: "
 vCOUNTER=1
@@ -256,6 +256,8 @@ then
 elif [ $vCHOICE -eq 2 ]
 then
     filename="access-logs-search-$vUSER-$vCLIENTNAME-$currentDate.log"
+    vPATH="./client-reports/$vFOLDERNAME/bb-access-logs/"
+    mkdir -p $vPATH
     read -p "Input the ${red}Information String${normal} you want to search (wrap in double quotes if using special characters): ${bold}" vSTRINGSEARCH
     echo "${normal}"
     # Create a header for easy replication
@@ -271,42 +273,42 @@ then
     echo "==============================================================================" 
     echo 
     # Create a header for the file
-    echo "==============================================================================" >> ./client-reports/"$filename"
-    echo >> ./client-reports/"$filename"
-    echo "User: $vUSER" >> ./client-reports/"$filename"
-    echo "Client Name: $vCLIENTNAME" >> ./client-reports/"$filename"
-    echo "Client Environment: $vENVIRONMENT" >> ./client-reports/"$filename"
-    echo "Start Date: $vSTARTDATE" >> ./client-reports/"$filename"
-    echo "End Date: $vENDDATE" >> ./client-reports/"$filename"
-    echo "Search String: $vSTRINGSEARCH" >> ./client-reports/"$filename"
-    echo >> ./client-reports/"$filename"
-    echo "==============================================================================" >> ./client-reports/"$filename"
-    echo >> ./client-reports/"$filename"
+    echo "==============================================================================" >> $vPATH"$filename"
+    echo >> $vPATH"$filename"
+    echo "User: $vUSER" >> $vPATH"$filename"
+    echo "Client Name: $vCLIENTNAME" >> $vPATH"$filename"
+    echo "Client Environment: $vENVIRONMENT" >> $vPATH"$filename"
+    echo "Start Date: $vSTARTDATE" >> $vPATH"$filename"
+    echo "End Date: $vENDDATE" >> $vPATH"$filename"
+    echo "Search String: $vSTRINGSEARCH" >> $vPATH"$filename"
+    echo >> $vPATH"$filename"
+    echo "==============================================================================" >> $vPATH"$filename"
+    echo >> $vPATH"$filename"
     # Connect to server
     echo
-    vPATH="./client-reports/$vFOLDERNAME/bb-access-logs/"
-    mkdir -p $vPATH
     vCOUNTER=0
     for ip in "${vAPPSIP[@]}"; 
         do
         echo "Connecting to ${vAPPS[$vCOUNTER]}"
-        echo "Connecting to ${vAPPS[$vCOUNTER]}" >> ./client-reports/"$filename"
-        echo >> ./client-reports/"$filename"
+        echo "Connecting to ${vAPPS[$vCOUNTER]}" >> $vPATH"$filename"
+        echo >> $vPATH"$filename"
         for day in "${datearrange[@]}"; 
             do
                 sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip grep --color=auto -iH $vSTRINGSEARCH /usr/local/blackboard/logs/tomcat/bb-access-log.$day.txt >> $vPATH"$filename" 2>>./script-logs/error-logs.txt
                 sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip zgrep --color=auto $vSTRINGSEARCH /usr/local/blackboard/asp/${vAPPS[$vCOUNTER]}/tomcat/bb-access-log.$day.txt.gz >> $vPATH"$filename" 2>>./script-logs/error-logs.txt
             done
         echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
-        echo >> ./client-reports/"$filename"
-        echo "Disconnecting from ${vAPPS[$vCOUNTER]}" >> ./client-reports/"$filename"
-        echo >> ./client-reports/"$filename"
+        echo >> $vPATH"$filename"
+        echo "Disconnecting from ${vAPPS[$vCOUNTER]}" >> $vPATH"$filename"
+        echo >> $vPATH"$filename"
         echo ""
         vCOUNTER=$[$vCOUNTER+1]
         done
 elif [ $vCHOICE -eq 3 ]
 then
     filename="bb-services-search-$vUSER-$vCLIENTNAME-$currentDate.log"
+    vPATH="./client-reports/$vFOLDERNAME/bb-services-logs/"
+    mkdir -p $vPATH
     read -p "Input the ${red}Information String${normal} you want to search (wrap in double quotes if using special characters): ${bold}" vSTRINGSEARCH
     echo "${normal}"
     # Create a header for easy replication
@@ -322,36 +324,34 @@ then
     echo "==============================================================================" 
     echo 
     # Create a header for the file
-    echo "==============================================================================" >> ./client-reports/"$filename"
-    echo >> ./client-reports/"$filename"
-    echo "User: $vUSER" >> ./client-reports/"$filename"
-    echo "Client Name: $vCLIENTNAME" >> ./client-reports/"$filename"
-    echo "Client Environment: $vENVIRONMENT" >> ./client-reports/"$filename"
-    echo "Start Date: $vSTARTDATE" >> ./client-reports/"$filename"
-    echo "End Date: $vENDDATE" >> ./client-reports/"$filename"
-    echo "Search String: $vSTRINGSEARCH" >> ./client-reports/"$filename"
-    echo >> ./client-reports/"$filename"
-    echo "==============================================================================" >> ./client-reports/"$filename"
-    echo >> ./client-reports/"$filename"
+    echo "==============================================================================" >> $vPATH"$filename"
+    echo >> $vPATH"$filename"
+    echo "User: $vUSER" >> $vPATH"$filename"
+    echo "Client Name: $vCLIENTNAME" >> $vPATH"$filename"
+    echo "Client Environment: $vENVIRONMENT" >> $vPATH"$filename"
+    echo "Start Date: $vSTARTDATE" >> $vPATH"$filename"
+    echo "End Date: $vENDDATE" >> $vPATH"$filename"
+    echo "Search String: $vSTRINGSEARCH" >> $vPATH"$filename"
+    echo >> $vPATH"$filename"
+    echo "==============================================================================" >> $vPATH"$filename"
+    echo >> $vPATH"$filename"
     # Connect to server
     echo
-    vPATH="./client-reports/$vFOLDERNAME/bb-services-logs/"
-    mkdir -p $vPATH
     vCOUNTER=0
     for ip in "${vAPPSIP[@]}"; 
         do
         echo "Connecting to ${vAPPS[$vCOUNTER]}"
-        echo "Connecting to ${vAPPS[$vCOUNTER]}" >> ./client-reports/"$filename"
-        echo >> ./client-reports/"$filename"
+        echo "Connecting to ${vAPPS[$vCOUNTER]}" >> $vPATH"$filename"
+        echo >> $vPATH"$filename"
         for day in "${datearrange[@]}"; 
             do
                 sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip grep --color=auto -iA 1000 $vSTRINGSEARCH /usr/local/blackboard/logs/bb-services-log.$day.txt >> $vPATH"$filename" 2>>./script-logs/error-logs.txt
                 sshpass -p $vPASS ssh -o StrictHostKeyChecking=no $vUSER@$ip grep --color=auto -iA 1000 $vSTRINGSEARCH /usr/local/blackboard/logs/bb-services-log.txt >> $vPATH"$filename" 2>>./script-logs/error-logs.txt
             done
         echo "Disconnecting from ${vAPPS[$vCOUNTER]}"
-        echo >> ./client-reports/"$filename"
-        echo "Disconnecting from ${vAPPS[$vCOUNTER]}" >> ./client-reports/"$filename"
-        echo >> ./client-reports/"$filename"
+        echo >> $vPATH"$filename"
+        echo "Disconnecting from ${vAPPS[$vCOUNTER]}" >> $vPATH"$filename"
+        echo >> $vPATH"$filename"
         echo ""
         vCOUNTER=$[$vCOUNTER+1]
         done
