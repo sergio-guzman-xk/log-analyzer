@@ -115,7 +115,7 @@ for eachapp in "${vAPPS[@]}";
     done
 
 # deleting the file so we are always up to date
-# rm -rf $vFILENAME
+rm -rf $vFILENAME
 
 echo "${normal}We found the following Apps to work based on your input: "
 vCOUNTER=1
